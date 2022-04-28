@@ -1,0 +1,16 @@
+body{
+    margin: 0;
+    background-image: url(../img/perro.jpg.jpg);
+    background-size: contain;
+    background-attachment:fixed;
+    background-repeat: no-repeat;
+    -webkit-background-size: cover;
+}
+h1{
+    text-align: right;
+    font-size: 110px;
+    margin-top: 480px;
+    margin-right: 35px;
+    color: #d0dbdd;
+    font-family: Montserrat, sans-serif;
+}
