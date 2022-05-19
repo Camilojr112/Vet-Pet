@@ -1,5 +1,41 @@
 <?php
-    include("tempade/cabecera.php");
+    include("tempade/cabecera.php"); 
+?>
+
+<?php
+  $txtID=(isset($_POST['txtID']))?$_POST['txtID']:"";
+  $txtFecha=(strtotime($_POST['txtFecha']))?$_POST['txtFecha']:"";
+  $txtHora=(isset($_POST['txtHora']))?$_POST['txtHora']:"";
+  $txtPaciente=(isset($_POST['txtPaciente']))?$_POST['txtPaciente']:"";
+  $txtMedico=(isset($_POST['txtMedico']))?$_POST['txtMedico']:"";
+  $texMotivo=(isset($_POST['texMotivo']))?$_POST['texMotivo']:"";
+  $txtestado=(isset($_POST['txtestado']))?$_POST['txtestado']:"";
+  $accion=(isset($_POST['accion']))?$_POST['accion']:"";
+
+  include("conexion/bd.php");
+
+
+  switch($accion){
+      case "agregar":
+        $sentenciaSQL= $conexion->prepare("INSERT INTO `citasagg` (fecha, hora, paciente, medico, motivo, estado) VALUES (:fecha,:hora,:paciente,:medico,:motivo, :estado);");
+        $sentenciaSQL->bindParam(':fecha',$txtFecha);
+        $sentenciaSQL->bindParam(':hora',$txtHora);
+        $sentenciaSQL->bindParam(':paciente',$txtPaciente);
+        $sentenciaSQL->bindParam(':medico',$txtMedico);
+        $sentenciaSQL->bindParam(':motivo',$texMotivo);
+        $sentenciaSQL->bindParam(':estado',$txtestado);
+        $sentenciaSQL->execute();
+       
+    break;
+    case "borrar":
+       echo "borrar" ;
+       break;
+  }
+
+  $sentenciaSQL= $conexion->prepare("SELECT*FROM citasagg");
+  $sentenciaSQL->execute();
+  $listadeCitas=$sentenciaSQL->fetchAll(PDO::FETCH_ASSOC);
+ 
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -67,18 +103,19 @@
                         </tr>
                     </thead>
                     <tbody>
+                        <?php foreach($listadeCitas as $cita){?>
                     <tr>
-                        <td>1</td>
-                        <td>2022-02-15</td>
-                        <td>09:00:00</td>
-                        <td>Caiser</td>
-                        <td>Arid</td>
-                        <td>Cirugia</td>
-                        <td><span class="offline"></span></td>
+                        <td><?php echo $cita['id'];?></td>
+                        <td><?php echo $cita['fecha'];?></td>
+                        <td><?php echo $cita['hora'];?></td>
+                        <td><?php echo $cita['paciente'];?></td>
+                        <td><?php echo $cita['medico'];?></td>
+                        <td><?php echo $cita['motivo'];?></td>
+                        <td><?php echo $cita['estado'];?></td>
                         <td> 
                           
-                         
-                            <a href="#" >
+                         <form method="POST">
+                            <a href="#">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-eye-pac" width="20" height="20" viewBox="0 0 24 24" stroke-width="1.5" stroke="#5886E8" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                       <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                                       <circle cx="12" cy="12" r="2" />
@@ -99,17 +136,20 @@
 
                         
                             <a href="#">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-circle-plus-pac" width="20" height="20" viewBox="0 0 24 24" stroke-width="1.5" stroke="#5886E8" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                      <circle cx="12" cy="12" r="9" />
-                                      <line x1="9" y1="12" x2="15" y2="12" />
-                                      <line x1="12" y1="9" x2="12" y2="15" />
-                                </svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-trash" width="20" height="20" viewBox="0 0 24 24" stroke-width="1.5" stroke="#000000" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                            <line x1="4" y1="7" x2="20" y2="7" />
+                            <line x1="10" y1="11" x2="10" y2="17" />
+                            <line x1="14" y1="11" x2="14" y2="17" />
+                            <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" />
+                            <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" />
+                            </svg>
                             </a>
+                            </form>
                         </td>
                      </tr>
                   
-                     </tr>
+                     <?php } ?>
                      </div>  
 
                     </section>
@@ -125,40 +165,41 @@
                              <path d="M10 10l4 4m0 -4l-4 4" /></svg></button>
                             
                      <h3>Nueva cita</h3>
-                        <div class="contenedor-modal">
-                    <form class="formulario3">
+                        <div class="contenedor-modal" >
+                    <form class="formulario3" method="POST" enctype="multipart/form-data">
+                    <input type="number" id="txtID" name="txtID">
+                    <div class="field" >
                         
-                    <div class="field">
                         <label>Fecha</label>
-                        <input type="date">
+                        <input type="date" name="txtFecha" id="txtFecha">
                     </div>
                     <div class="field">
                         <label>hora</label>
-                        <input type="time">
+                        <input type="time" name="txtHora" id="txtHora">
                     </div>
                     <div class="field">
                         <label>Paciente</label>
-                        <input type="text">
+                        <input type="text" name="txtPaciente" id="txtPaciente">
                     </div>
                     <div class="field">
                         <label>Medico</label>
-                        <input type="text">
+                        <input type="text" name="txtMedico" id="txtMedico">
                     </div>
                     <div class="field">
                         <label>Cirugia</label>
-                        <input type="text">
+                        <input type="texMotivo" name="texMotivo" id="texMotivo">
                     </div>
                     <div class="field">
                         <label>Esado</label>
-                        <select name="" id="">
-                        <option value="">Pendiente</option>
-                        <option value="">Cancelada</option>
-                        <option value="">Pospuesta</option>
+                        <select name="txtestado" id="txtestado" value="">
+                        <option>Pendiente</option>
+                        <option>Cancelada</option>
+                        <option>Pospuesta</option>
                         </select>
                       </div>
                         <div>
-                            <button class="bt2" type="submit">Cancelar</button>
-                            <button class="bt2" type="submit">Guardar registro</button>
+                            <button class="bt2" type="submit" name="accion" value="cancelar">Cancelar</button>
+                            <button class="bt2" type="submit" name="accion" value="agregar">Guardar registro</button>
                         </div>
                         </div>
                         
